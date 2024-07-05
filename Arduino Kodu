@@ -1,0 +1,39 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial BTSerial(2, 3);
+
+int redPin = 9;
+int greenPin = 10;
+int bluePin = 11;
+
+void setup() {
+  BTSerial.begin(9600);
+  Serial.begin(9600);
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  
+}
+
+void loop() {
+ if (BTSerial.available()){
+   String hexColor = BTSerial.readStringUntil('\n');
+   hexColor.trim();
+   if(hexColor.startsWith("0x")){
+     hexColor = hexColor.substring(2);
+    }
+    if(hexColor.length() == 8){
+       long number = strtoul(hexColor.c_str(), NULL, 16);
+       int r = (number >> 16) & 0xFF;
+       int g = (number >> 8) & 0xFF;
+       int b = number & 0xFF;
+
+       analogWrite(redPin, r);
+       analogWrite(greenPin, g);
+       analogWrite(bluePin, b);
+      } else {
+         Serial.println("Geçersiz hex kodu ");
+        }
+  }
+  delay(10);
+}
